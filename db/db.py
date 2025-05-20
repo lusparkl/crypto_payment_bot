@@ -2,7 +2,7 @@ import sqlite3
 
 class Database:
     def __init__(self):
-        self.connection = sqlite3.connect("base.db")
+        self.connection = sqlite3.connect("db/database.db")
         self.cursor = self.connection.cursor()
 
     def is_user_exists(self, user_id: int) -> bool:
@@ -18,4 +18,15 @@ class Database:
             self.connection.commit()
             return True
         except sqlite3.IntegrityError:
+            return False
+        
+    def set_user_subscribed(self, user_id: int) -> bool:
+        try:
+            self.cursor.execute(
+                "UPDATE user SET status = ? WHERE id = ?",
+                ("subscribed", user_id)
+            )
+            self.connection.commit()
+            return self.cursor.rowcount > 0
+        except sqlite3.Error:
             return False
